@@ -1,0 +1,13 @@
+@page "/logout"
+@inject NavigationManager Navigation
+@inject MsalAuthStateProvider AuthStateProvider
+
+<p>Signing out...</p>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthStateProvider.SignOutAsync();
+        Navigation.NavigateTo("/login");
+    }
+}

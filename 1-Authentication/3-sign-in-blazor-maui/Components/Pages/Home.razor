@@ -1,0 +1,17 @@
+@page "/"
+
+<PageTitle>Home</PageTitle>
+
+<h1>Welcome to MAUI CIAM</h1>
+
+<p>This sample demonstrates sign-in with Microsoft Entra External ID in a .NET MAUI Blazor Hybrid app.</p>
+
+<AuthorizeView>
+    <Authorized>
+        <p>You are signed in as <strong>@context.User.Identity?.Name</strong>.</p>
+        <p>Visit <a href="claims">My Claims</a> to see your identity token claims.</p>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not signed in. <a href="login">Sign in</a> to access your claims.</p>
+    </NotAuthorized>
+</AuthorizeView>

@@ -1,0 +1,42 @@
+@page "/claims"
+@attribute [Authorize]
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>My Claims</PageTitle>
+
+<h1>My Claims</h1>
+
+@if (claims is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Claim Type</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var claim in claims)
+            {
+                <tr>
+                    <td>@claim.Type</td>
+                    <td>@claim.Value</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<System.Security.Claims.Claim>? claims;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthStateProvider.GetAuthenticationStateAsync();
+        claims = state.User.Claims.OrderBy(c => c.Type);
+    }
+}
