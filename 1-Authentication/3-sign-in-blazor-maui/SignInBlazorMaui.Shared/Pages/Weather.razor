@@ -11,9 +11,13 @@
 
 <RenderModeIndicator />
 
-<p>This component demonstrates showing data.</p>
+<p>This component loads data from the protected weather API.</p>
 
-@if (forecasts == null)
+<button class="btn btn-primary mb-3" @onclick="RefreshWeatherAsync" disabled="@(forecasts is null)">
+    Refresh weather
+</button>
+
+@if (forecasts is null)
 {
     <p><em>Loading...</em></p>
 }
@@ -47,6 +51,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await RefreshWeatherAsync();
+    }
+
+    private async Task RefreshWeatherAsync()
+    {
+        forecasts = null;
         forecasts = await WeatherService.GetWeatherForecastsAsync();
     }
 }
