@@ -35,13 +35,13 @@ extensions:
 
 ## Overview
 
-This sample demonstrates a **4-project Blazor solution** that authenticates users with Microsoft Entra External ID (CIAM) and runs the **same shared UI** natively (MAUI) and on the web across **every Blazor render mode**:
+This sample demonstrates a **4-project Blazor solution** that authenticates users with Microsoft Entra External ID (CIAM) and runs the **same shared UI** natively (MAUI) and on the web across every Blazor render mode:
 
 | Project | Description |
 |---|---|
 | **SignInBlazorMaui** | .NET MAUI Blazor Hybrid app (iOS, Android, Mac Catalyst, Windows) using MSAL.NET for native sign-in |
 | **SignInBlazorMaui.Shared** | Razor Class Library with the shared Blazor components (pages, layouts, services) used by both MAUI and Web |
-| **SignInBlazorMaui.Web** | ASP.NET Core Blazor Web App (server) using Microsoft.Identity.Web for OIDC sign-in. Hosts the shared UI in static SSR, Interactive Server, and Interactive WebAssembly, and exposes protected `/api/weather` and `/api/profile` endpoints |
+| **SignInBlazorMaui.Web** | ASP.NET Core Blazor Web App (server) using Microsoft.Identity.Web for OIDC sign-in. Hosts the shared UI in static SSR, Interactive Server, Interactive Auto, and Interactive WebAssembly, and exposes a protected `/api/weather` endpoint |
 | **SignInBlazorMaui.Web.Client** | Blazor WebAssembly client for the Web App's Interactive WebAssembly / Interactive Auto pages. It stores **no tokens** — it receives the authentication state serialized from the server |
 
 The same Blazor UI runs natively on mobile/desktop (via MAUI) and in the browser (via the Blazor Web App), with platform-appropriate authentication on each. This sample targets **.NET 10**.
@@ -49,8 +49,8 @@ The same Blazor UI runs natively on mobile/desktop (via MAUI) and in the browser
 ## Scenario
 
 1. The **MAUI app** uses MSAL.NET to sign in a user interactively, obtain a JWT [ID Token](https://aka.ms/id-tokens) from **Microsoft Entra External ID**, and call the Web APIs with the access token.
-1. The **Web app** uses OpenID Connect (via Microsoft.Identity.Web) to sign in browser users, hosts the shared UI across all Blazor render modes, and exposes protected `/api/weather` and `/api/profile` endpoints.
-1. Both apps share the same Blazor components. The **Profile** page shows how a mutable per-user value is read and written differently per render mode: directly in-process (Interactive Server on the web) or through the API (WebAssembly and MAUI).
+1. The **Web app** uses OpenID Connect (via Microsoft.Identity.Web) to sign in browser users, hosts the shared UI across all Blazor render modes, and exposes the protected `/api/weather` endpoint.
+1. Both apps share the same Blazor components, including an **Account** page that reads identity claims locally from each host's authentication state.
 
 ![Scenario Image](./ReadmeFiles/topology.png)
 
@@ -165,11 +165,11 @@ Clean the solution, rebuild the solution, and run it.
 
 ### Web app
 
-Open `https://localhost:7157`. You'll be redirected to sign in with Microsoft Entra External ID via OIDC. After signing in you'll see the home page (static SSR). Navigate between **Counter** (Interactive Auto), **Weather** (WebAssembly), **Account** (WebAssembly, read-only claims), and **Profile** (Interactive Server). Each page shows a badge indicating the render mode it is currently running in. Edit and save your **Profile** value and note that it persists across render modes and in the MAUI app.
+Open `https://localhost:7157`. You'll be redirected to sign in with Microsoft Entra External ID via OIDC. After signing in you'll see the home page (static SSR). Navigate between **Counter** (Interactive Server), **Weather** (WebAssembly), and **Account** (Interactive Auto, read-only claims). Each page shows a badge indicating the render mode it is currently running in.
 
 ### MAUI app
 
-Click the **Sign in with Microsoft** button. On iOS/Mac Catalyst, a system browser sheet opens; on Android, a Chrome Custom Tab; on Windows, an embedded WebView2 dialog. After signing in, you can view your claims, weather data, and edit your profile. Every page runs interactively in the native WebView regardless of the render mode it declares.
+Click the **Sign in with Microsoft** button. On iOS/Mac Catalyst, a system browser sheet opens; on Android, a Chrome Custom Tab; on Windows, an embedded WebView2 dialog. After signing in, you can view your claims and weather data. Every page runs interactively in the native WebView regardless of the render mode it declares.
 
 ## About the code
 
@@ -177,13 +177,13 @@ Click the **Sign in with Microsoft** button. On iOS/Mac Catalyst, a system brows
 
 The solution uses a **shared Razor Class Library** pattern:
 
-- **SignInBlazorMaui.Shared** contains all shared Blazor components (Home, Counter, Weather, Account, and Profile pages), layout (MainLayout, NavMenu), the `RenderModeIndicator` component, and the service interfaces (`IFormFactor`, `IWeatherService`, `IUserProfileService`).
+- **SignInBlazorMaui.Shared** contains all shared Blazor components (Home, Counter, Weather, and Account pages), layout (MainLayout, NavMenu), the `RenderModeIndicator` component, and the service interfaces (`IFormFactor`, `IWeatherService`).
 
-- **SignInBlazorMaui** (MAUI) provides native implementations: `MsalAuthenticationStateProvider` for MSAL-based auth, `FormFactor` using `DeviceInfo`, HTTP-based `WeatherService` and `UserProfileService` that attach the MSAL access token, and platform-specific code for each target (Android `MsalActivity`, iOS `OpenUrl` handler, Mac Catalyst `ASWebAuthenticationSession` workaround, Windows WinUI3).
+- **SignInBlazorMaui** (MAUI) provides native implementations: `MsalAuthenticationStateProvider` for MSAL-based auth, `FormFactor` using `DeviceInfo`, an HTTP-based `WeatherService` that attaches the MSAL access token, and platform-specific code for each target (Android `MsalActivity`, iOS `OpenUrl` handler, Mac Catalyst `ASWebAuthenticationSession` workaround, Windows WinUI3).
 
-- **SignInBlazorMaui.Web** provides the server implementations and the API: Microsoft.Identity.Web for OIDC auth, `FormFactor` returning "Web", `WeatherService` generating mock data, `ServerUserProfileService` backed by an in-process `ProfileStore`, and the protected `/api/weather` and `/api/profile` endpoints.
+- **SignInBlazorMaui.Web** provides the server implementations and API: Microsoft.Identity.Web for OIDC auth, `FormFactor` returning "Web", `WeatherService` generating mock data, and the protected `/api/weather` endpoint.
 
-- **SignInBlazorMaui.Web.Client** (Blazor WebAssembly) provides the browser implementations used by the WebAssembly and Auto pages: `FormFactor` returning "WebAssembly", and `ClientWeatherService` / `ClientUserProfileService` that call the APIs same-origin with the authentication cookie.
+- **SignInBlazorMaui.Web.Client** (Blazor WebAssembly) provides the browser implementations used by the WebAssembly and Auto pages: `FormFactor` returning "WebAssembly" and `ClientWeatherService`, which calls the API same-origin with the authentication cookie.
 
 ### Blazor render modes
 
@@ -192,12 +192,11 @@ The Web App uses **per-page interactivity**, so each page selects the render mod
 | Page | Route | Render mode | Notes |
 |---|---|---|---|
 | Home | `/` | **Static SSR** | Content only — no interactivity and no persistent server connection |
-| Counter | `/counter` | **Interactive Auto** | Renders on the server for the first visit, then on WebAssembly once the runtime has downloaded |
+| Counter | `/counter` | **Interactive Server** | Runs on the server and sends counter updates over a persistent Blazor circuit |
 | Weather | `/weather` | **Interactive WebAssembly** | Runs in the browser and calls the protected `/api/weather` endpoint — no server SignalR circuit |
-| Account | `/account` | **Interactive WebAssembly** | Read-only claims, rendered locally on the client from the serialized authentication state |
-| Profile | `/profile` | **Interactive Server** | Edits a per-user value with direct, in-process access to the server-side store — no API call needed |
+| Account | `/account` | **Interactive Auto** | Initially runs on the server, then can display the serialized claim set from WebAssembly on later visits without storing access tokens |
 
-This layout shows the real-world trade-off between render modes: pages that only need to read or edit data are served as static SSR or WebAssembly to avoid a per-user Interactive Server circuit, while a page that benefits from direct in-process server access (`Profile`) uses Interactive Server.
+This layout shows the real-world trade-off between render modes: content-only pages use static SSR, Counter demonstrates a persistent Interactive Server circuit, Weather uses WebAssembly to avoid that connection, and Account uses Interactive Auto to run from either host while displaying the same claims.
 
 Because the shared pages declare a per-page `@rendermode` and are also hosted by the MAUI `BlazorWebView`, they use an indirection (`InteractiveRenderSettings` in the `.Shared` RCL) to assign render modes. On .NET 10 a `BlazorWebView` is always interactive and throws if a component specifies a render mode, so the MAUI app calls `InteractiveRenderSettings.ConfigureBlazorHybridRenderModes()` at startup to clear the modes (they become no-ops) while the web app keeps the real per-page modes. See the comments in `SignInBlazorMaui.Shared/InteractiveRenderSettings.cs` for details. On .NET 11 this workaround is no longer needed ([dotnet/aspnetcore#65876](https://github.com/dotnet/aspnetcore/pull/65876) makes Blazor Hybrid treat render modes as no-ops natively).
 

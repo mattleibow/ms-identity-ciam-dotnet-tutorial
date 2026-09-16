@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
 @attribute [Authorize]
-@rendermode InteractiveWebAssembly
+@rendermode InteractiveAuto
 
 <PageTitle>Account</PageTitle>
 
@@ -11,15 +11,16 @@
 <RenderModeIndicator />
 
 <p>
-    Your identity claims, read locally on this device. On the web this page runs in
-    <strong>WebAssembly</strong>, so the claims come from the authentication state the
-    server serialized to the browser &mdash; no token is stored client-side. In the MAUI
-    app the same page runs natively and shows the claims from the on-device MSAL session.
+    Your identity claims, read from the current authentication state. On the web this
+    page uses <strong>Interactive Auto</strong>, so it can initially run on the server
+    and use WebAssembly on later visits. The server serializes the claims for the
+    WebAssembly host, but no access token is stored client-side. In the MAUI app the
+    same page runs natively and shows the claims from the on-device MSAL session.
 </p>
 
 <AuthorizeView>
     <Authorized>
-        <h4 class="mb-3">Profile</h4>
+        <h4 class="mb-3">Account details</h4>
         <div class="row mb-3">
             @if (!string.IsNullOrEmpty(displayName))
             {

@@ -1,13 +1,19 @@
 ﻿@page "/counter"
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
-@rendermode InteractiveAuto
+@rendermode InteractiveServer
 
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
 
 <RenderModeIndicator />
+
+<p>
+    On the web, this counter runs on the server and sends UI updates over a Blazor
+    circuit. In the MAUI app the render mode is ignored and the component runs
+    interactively inside the native WebView.
+</p>
 
 <p role="status">Current count: @currentCount</p>
 

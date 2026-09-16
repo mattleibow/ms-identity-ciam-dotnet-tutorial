@@ -21,6 +21,5 @@ builder.Services.AddScoped(sp =>
 // Device-specific services used by the SignInBlazorMaui.Shared project.
 builder.Services.AddSingleton<IFormFactor, FormFactor>();
 builder.Services.AddScoped<IWeatherService, ClientWeatherService>();
-builder.Services.AddScoped<IUserProfileService, ClientUserProfileService>();
 
 await builder.Build().RunAsync();
