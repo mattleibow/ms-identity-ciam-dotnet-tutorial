@@ -1,0 +1,65 @@
+{
+  "Sample": {
+    "Title": "A .NET MAUI native application using MSAL.NET with Microsoft Entra ID workforce tenants",
+    "Client": "DotNetMAUI",
+    "Level": 100
+  },
+  "AppRegistrations": [
+    {
+      "x-ms-id": "workforce-dotnet-maui",
+      "x-ms-name": "ms-identity-workforce-dotnet-maui",
+      "x-ms-version": "2.0",
+      "signInAudience": "AzureADMyOrg",
+      "replyUrlsWithType": [
+        {
+          "url": "msal{AppId}://auth",
+          "type": "InstalledClient"
+        },
+        {
+          "url": "http://localhost",
+          "type": "InstalledClient"
+        }
+      ],
+      "requiredResourceAccess": [
+        {
+          "x-ms-resourceAppName": "Microsoft Graph",
+          "resourceAppId": "00000003-0000-0000-c000-000000000000",
+          "resourceAccess": [
+            {
+              "id": "e1fe6dd8-ba31-4d61-89e7-88639da4683d",
+              "type": "Scope",
+              "x-ms-name": "User.Read"
+            }
+          ]
+        }
+      ],
+      "codeConfigurations": [
+        {
+          "settingFile": "appsettings.json",
+          "replaceTokens": {
+            "appId": "Enter_the_Application_Id_Here",
+            "tenantId": "Enter_the_Tenant_Id_Here"
+          }
+        },
+        {
+          "settingFile": "Platforms/Android/AndroidManifest.xml",
+          "replaceTokens": {
+            "appId": "Enter_the_Application_Id_Here"
+          }
+        },
+        {
+          "settingFile": "Platforms/iOS/Info.plist",
+          "replaceTokens": {
+            "appId": "Enter_the_Application_Id_Here"
+          }
+        },
+        {
+          "settingFile": "Platforms/MacCatalyst/Info.plist",
+          "replaceTokens": {
+            "appId": "Enter_the_Application_Id_Here"
+          }
+        }
+      ]
+    }
+  ]
+}
