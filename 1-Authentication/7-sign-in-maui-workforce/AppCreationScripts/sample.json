@@ -1,0 +1,94 @@
+{
+  "Sample": {
+    "Title": "A .NET MAUI app using MSAL.NET with Microsoft Entra ID workforce tenants",
+    "Level": 200,
+    "Client": "MAUI App",
+    "Description": "Sign in work or school users with a native .NET MAUI app.",
+    "Languages": [
+      "csharp"
+    ],
+    "Products": [
+      "msal-net",
+      "entra-id"
+    ],
+    "RepositoryUrl": "ms-identity-dotnet-tutorial",
+    "Endpoint": "AAD v2.0",
+    "Provider": "MicrosoftEntraID"
+  },
+  "AADApps": [
+    {
+      "Id": "client",
+      "Name": "workforce-dotnet-maui",
+      "Kind": "Mobile",
+      "SampleSubPath": "1-Authentication\\7-sign-in-maui-workforce",
+      "SignInAudience": "AzureADMyOrg",
+      "RequiredResourcesAccess": [
+        {
+          "Resource": "Microsoft Graph",
+          "DelegatedPermissions": [
+            "User.Read"
+          ]
+        }
+      ],
+      "SDK": "MsalNet",
+      "DefaultDesktopAndMobileRedirectUriSettings": {
+        "UsesDefaultMsalRedirectUri": true
+      },
+      "ManualSteps": [
+        {
+          "Comment": "Register a single-tenant public client and configure the MSAL and localhost redirects."
+        }
+      ]
+    }
+  ],
+  "CodeConfiguration": [
+    {
+      "App": "client",
+      "SettingKind": "Replace",
+      "SettingFile": "\\..\\appsettings.json",
+      "Mappings": [
+        {
+          "key": "Enter_the_Tenant_Id_Here",
+          "value": "$tenantId"
+        },
+        {
+          "key": "Enter_the_Application_Id_Here",
+          "value": ".AppId"
+        }
+      ]
+    },
+    {
+      "App": "client",
+      "SettingKind": "Replace",
+      "SettingFile": "\\..\\Platforms\\Android\\AndroidManifest.xml",
+      "Mappings": [
+        {
+          "key": "Enter_the_Application_Id_Here",
+          "value": ".AppId"
+        }
+      ]
+    },
+    {
+      "App": "client",
+      "SettingKind": "Replace",
+      "SettingFile": "\\..\\Platforms\\iOS\\Info.plist",
+      "Mappings": [
+        {
+          "key": "Enter_the_Application_Id_Here",
+          "value": ".AppId"
+        }
+      ]
+    },
+    {
+      "App": "client",
+      "SettingKind": "Replace",
+      "SettingFile": "\\..\\Platforms\\MacCatalyst\\Info.plist",
+      "Mappings": [
+        {
+          "key": "Enter_the_Application_Id_Here",
+          "value": ".AppId"
+        }
+      ]
+    }
+  ]
+}
